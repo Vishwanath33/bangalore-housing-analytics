@@ -4,14 +4,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
-# Page config
 st.set_page_config(
     page_title="Bangalore Housing Analytics",
     page_icon="🏠",
     layout="wide"
 )
 
-# Custom CSS
 st.markdown("""
 <style>
     .main-header {font-size: 2rem; font-weight: bold; color: #1f77b4;}
@@ -19,7 +17,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load data
 @st.cache_data
 def load_data():
     df = pd.read_csv('bangalore_cleaned.csv')
@@ -27,16 +24,13 @@ def load_data():
 
 df = load_data()
 
-# Header
 st.markdown('<p class="main-header">🏠 Bangalore Housing Analytics Dashboard</p>', 
             unsafe_allow_html=True)
 st.markdown("*Interactive analysis of 13,000+ Bangalore properties*")
 st.divider()
 
-# Sidebar
 st.sidebar.header("🔍 Filters")
 
-# BHK filter
 bhk_options = sorted(df['bhk'].unique())
 selected_bhk = st.sidebar.multiselect(
     "BHK Type",
@@ -44,7 +38,6 @@ selected_bhk = st.sidebar.multiselect(
     default=[2, 3]
 )
 
-# Price range
 min_p, max_p = int(df['price'].min()), int(df['price'].max())
 price_range = st.sidebar.slider(
     "Price Range (Lakhs ₹)",
@@ -53,7 +46,6 @@ price_range = st.sidebar.slider(
     value=(min_p, 200)
 )
 
-# Location filter
 top_locations = df['location'].value_counts().head(30).index.tolist()
 selected_locations = st.sidebar.multiselect(
     "Locations (Top 30)",
@@ -61,7 +53,6 @@ selected_locations = st.sidebar.multiselect(
     default=top_locations[:10]
 )
 
-# Area type
 area_types = df['area_type'].unique().tolist()
 selected_area = st.sidebar.multiselect(
     "Area Type",
@@ -69,7 +60,6 @@ selected_area = st.sidebar.multiselect(
     default=area_types
 )
 
-# Apply filters
 filtered = df[
     (df['bhk'].isin(selected_bhk)) &
     (df['price'] >= price_range[0]) &
@@ -78,7 +68,6 @@ filtered = df[
     (df['area_type'].isin(selected_area))
 ]
 
-# Metrics row
 col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric("🏘️ Properties", f"{len(filtered):,}")
 col2.metric("💰 Avg Price", f"₹{filtered['price'].mean():.1f}L")
@@ -88,7 +77,6 @@ col5.metric("📍 Locations", f"{filtered['location'].nunique()}")
 
 st.divider()
 
-# Row 1: Two charts
 col1, col2 = st.columns(2)
 
 with col1:
@@ -114,7 +102,6 @@ with col2:
     fig2.update_layout(showlegend=False, height=350)
     st.plotly_chart(fig2, use_container_width=True)
 
-# Row 2: Scatter + Location bar
 col1, col2 = st.columns(2)
 
 with col1:
@@ -147,7 +134,6 @@ with col2:
     fig4.update_layout(showlegend=False, height=350)
     st.plotly_chart(fig4, use_container_width=True)
 
-# Row 3: Price per sqft heatmap by BHK
 st.subheader("💡 Price per Sqft by BHK and Area Type")
 if len(filtered) > 0:
     pivot = filtered.groupby(['bhk', 'area_type'])['price_per_sqft'].mean().unstack(fill_value=0)
@@ -160,7 +146,6 @@ if len(filtered) > 0:
     fig5.update_layout(height=300)
     st.plotly_chart(fig5, use_container_width=True)
 
-# Data table
 st.subheader("📋 Filtered Data")
 st.caption(f"Showing {min(50, len(filtered))} of {len(filtered):,} filtered properties")
 display_cols = ['location', 'bhk', 'total_sqft', 'bath', 'balcony', 'price', 'price_per_sqft', 'area_type']
@@ -169,6 +154,5 @@ st.dataframe(
     use_container_width=True
 )
 
-# Footer
 st.divider()
 st.caption("Data source: Kaggle Bangalore House Price Dataset | Built with Streamlit & Plotly")
