@@ -1,6 +1,9 @@
 # Bangalore Housing Analytics Dashboard
 
 Interactive data analytics dashboard for exploring real estate trends in Bangalore.
+## 🚀 Live Demo
+👉 [View Live Dashboard](https://bangalore-housing-analytics.streamlit.app)
+
 
 ## 🎯 Features
 - Real-time filtering by location, budget, and property size
